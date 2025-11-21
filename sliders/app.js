@@ -6,9 +6,10 @@ const API_MAPPING = {
 };
 
  
-function extractIdFromHashQueryStyle() {
-    const hash = window.location.hash.substring(1); 
-    const params = new URLSearchParams(hash); 
+// 🚨 التعديل الرئيسي: القراءة من جزء الاستعلام (Query) بدلاً من الـ Hash (#)
+function extractIdFromQueryStyle() {
+    const search = window.location.search.substring(1); // يبدأ بـ ?
+    const params = new URLSearchParams(search); 
      
     return params.get('id_groups') || '1'; 
 }
@@ -16,10 +17,11 @@ function extractIdFromHashQueryStyle() {
  
  
 function handleRedirection() {
-    const sliderId = extractIdFromHashQueryStyle(); 
+    // 🚨 التعديل: استخدام الدالة الجديدة
+    const sliderId = extractIdFromQueryStyle(); 
     const externalUrl = API_MAPPING[sliderId];
 
-    // إعداد تنسيق بسيط لعرض رسالة خطأ مؤقتة (في حال عدم وجود رابط)
+    // إعداد تنسيق بسيط لعرض رسالة خطأ مؤقتة
     document.body.style.whiteSpace = 'pre-wrap';
     document.body.style.margin = '0'; 
     document.body.style.fontFamily = 'monospace'; 
@@ -34,8 +36,7 @@ function handleRedirection() {
     // عرض رسالة مؤقتة قبل إعادة التوجيه
     document.body.textContent = `جاري إعادة التوجيه إلى مصدر البيانات: ${externalUrl} ...`;
     
-    // 🚨 التعديل الرئيسي: تنفيذ إعادة التوجيه الفورية
-    // هذا سيجعل الـ WebView يبدأ بتحميل الرابط الخارجي مباشرة.
+    // تنفيذ إعادة التوجيه الفورية
     window.location.replace(externalUrl);
 }
 
