@@ -10,7 +10,7 @@ function extractIdFromHashQueryStyle() {
     const hash = window.location.hash.substring(1); 
     const params = new URLSearchParams(hash); 
      
-    return params.get('id_sliders') || '1'; 
+    return params.get('id_groups') || '1'; 
 }
 
  
