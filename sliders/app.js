@@ -19,19 +19,30 @@ async function handleDataFetch() {
     const sliderId = extractIdFromHashQueryStyle(); 
     const externalUrl = API_MAPPING[sliderId];
 
-    // إعداد تنسيق بسيط لعرض النص الخام/المنسق
+    // 🚨 التعديل 1: إعداد نمط العرض الأساسي
     document.body.style.whiteSpace = 'pre-wrap';
     document.body.style.margin = '0'; // إزالة الهوامش الافتراضية
     document.body.style.fontFamily = 'monospace'; // خط أحادي المسافة
-    document.body.style.color = '#000'; // لون نص افتراضي
+    
+    // 🚨 التعديل 2: تحديد عنصر الإخراج
+    const outputElement = document.getElementById('data-output');
+    if (!outputElement) {
+        // احتياطي إذا لم يتم العثور على العنصر
+        document.body.textContent = '❌ خطأ: لم يتم العثور على وسم الإخراج #data-output';
+        document.body.style.color = '#dc3545';
+        return;
+    }
+    
+    // إعداد نمط عنصر الإخراج لسهولة القراءة/الاستخراج
+    outputElement.style.color = '#000'; // لون نص افتراضي (أسود)
 
     if (!externalUrl) {
-        document.body.style.color = '#dc3545'; 
-        document.body.textContent = `❌ لا يوجد رابط خارجي مُخزن للمُعرّف ID: ${sliderId}`;
+        outputElement.style.color = '#dc3545'; 
+        outputElement.textContent = `❌ لا يوجد رابط خارجي مُخزن للمُعرّف ID: ${sliderId}`;
         return;
     }
      
-    document.body.textContent = `جاري جلب البيانات للسلايدر ID: ${sliderId} من: ${externalUrl} ...`;
+    outputElement.textContent = `جاري جلب البيانات للسلايدر ID: ${sliderId} من: ${externalUrl} ...`;
 
     try {
         const response = await fetch(externalUrl);
@@ -45,18 +56,18 @@ async function handleDataFetch() {
  
         try {
             const jsonObject = JSON.parse(data);
- 
-            document.body.textContent = JSON.stringify(jsonObject, null, 4);
+            // 🚨 التعديل 3: عرض JSON المنسق داخل وسم الإخراج
+            outputElement.textContent = JSON.stringify(jsonObject, null, 4);
         } catch (e) {
- 
-            document.body.textContent = data; 
+            // 🚨 التعديل 4: عرض النص الخام داخل وسم الإخراج
+            outputElement.textContent = data; 
         }
         
     } catch (error) {
         const errorMessage = `❌ فشل جلب البيانات لـ ID: ${sliderId}. الخطأ: ${error.message}`;
-        // عرض رسالة الخطأ
-        document.body.textContent = errorMessage;
-        document.body.style.color = '#dc3545'; // لون الخطأ
+        // عرض رسالة الخطأ داخل وسم الإخراج
+        outputElement.textContent = errorMessage;
+        outputElement.style.color = '#dc3545'; // لون الخطأ
         console.error(errorMessage);
     }
 }
